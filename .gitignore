@@ -1,0 +1,11 @@
+# Alle logdateien
+*.log
+# relativer Pfad
+logs/
+# ignore db files
+*.db
+# ingnore subfolder außer eine Datei
+subfolder/*
+!subfolder/keep.txt
+# ignore all compiled files
+*.exe
