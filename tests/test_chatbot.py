@@ -1,6 +1,6 @@
 # tests/test_chatbot.py
 import re
-from hello import detect_intent, handle_intent, echo_response
+from chatBot import detect_intent, handle_intent, echo_response
 from datetime import datetime, timezone
 
 def test_detect_intent_greet():
