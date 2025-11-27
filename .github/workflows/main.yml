@@ -15,7 +15,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.x'           # <<< statt 3.1
+          python-version: '3.x'
           check-latest: false
           update-environment: true
           allow-prereleases: false
@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.10, 3.11, 3.12]
+        python-version: ['3.10', '3.11', '3.12']   # <-- immer als Strings
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -105,7 +105,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.x'           # <<< statt 3.1
+          python-version: '3.x'
 
       - name: Install test deps
         run: |
@@ -163,7 +163,7 @@ jobs:
           tag_name: v1.0.${{ github.run_number }}
           name: Release v1.0.${{ github.run_number }}
           body: |
-            Automated release including source code and artifacts.
+            Automated release including source code und artifacts.
             Commit: ${{ github.sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -190,7 +190,7 @@ jobs:
           gh_version=$(gh --version 2>/dev/null || true)
           if [ -n "$gh_version" ]; then
             echo "Using GitHub CLI to download artifacts (preferred)."
-            # attempt to download via actions/download-artifact is simpler:
+            # attempt to download via actions/download-artifact ist simpler:
           fi
         shell: bash
 
@@ -198,7 +198,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v1.0.${{ github.run_number }}
-          # include known artifact files if they exist
           files: chatbot.log,chatBot.py,hello.py
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
