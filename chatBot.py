@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 # hello.py - einfacher lokaler Chatbot zum Testen (UTC mit timezone-aware datetime)
 
-import random
 import sys
+import time
 from datetime import datetime, timezone
+import random
 
 LOGFILE = "chatbot.log"
 
@@ -36,7 +37,7 @@ def detect_intent(text: str) -> str:
     return "unknown"
 
 
-def handle_intent(intent: str, text: str) -> None:
+def handle_intent(intent: str, text: str) -> str:
     if intent == "greet":
         return "Hallo! Wie kann ich dir helfen?"
     if intent == "time":
@@ -46,7 +47,7 @@ def handle_intent(intent: str, text: str) -> None:
     if intent == "joke":
         return random.choice(JOKES)
     if intent == "bye":
-        return "Tschüss! Ich beende mich jetzt."
+        return 5
     return echo_response(text)
 
 
