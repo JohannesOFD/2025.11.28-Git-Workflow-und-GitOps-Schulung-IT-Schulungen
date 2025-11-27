@@ -26,7 +26,7 @@ jobs:
         run: |
           pwd
           ls -la
-          python hello.py "Hallo"
+          python chatBot.py "Hallo"
 
       - name: Upload logfile and script
         uses: actions/upload-artifact@v4
@@ -34,7 +34,7 @@ jobs:
           name: build-artifact
           path: |
             chatbot.log
-            hello.py
+            chatBot.py
 
   test:
     runs-on: ubuntu-latest
@@ -73,4 +73,4 @@ jobs:
       - name: Deploy (demo)
         run: |
           echo "Deploying..."
-          python hello.py "ende"
+          python chatBot.py "ende"
