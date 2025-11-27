@@ -24,7 +24,10 @@ jobs:
           # pip install -r requirements.txt || true
 
       - name: Run python script
-        run: python hello.py
+        run: |
+          pwd
+          ls -la
+          python hello.py
 
       - name: Upload script output (optional)
         run: |
