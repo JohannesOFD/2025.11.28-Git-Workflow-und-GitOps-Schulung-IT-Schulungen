@@ -90,6 +90,19 @@ jobs:
       - name: Lint (ruff)
         run: ruff check . --fix
 
+      - name: Commit & push linting changes (if any)
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add .
+          git diff --cached --quiet || (git commit -m "chore: linting" && git push)
+        
+      - name: Type checking (mypy)
+        run: mypy .
+
+      - name: Security scan (bandit)
+        run: bandit -r .
+
   test:
     runs-on: ubuntu-latest
     needs: build
