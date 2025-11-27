@@ -5,6 +5,9 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
 
+permissions:
+  contents: write   # braucht write-Permission, damit git push funktioniert bei auto-commits
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -12,7 +15,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0    # wichtig für git commits/pushes
+          fetch-depth: 0   # wichtig, damit git history vollständig ist für commits/pushes
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -58,23 +61,22 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install lint/format tools
+      - name: Install formatting & lint tools
         run: |
           python -m pip install --upgrade pip
-          pip install black ruff isort mypy bandit
+          pip install black isort ruff mypy bandit
 
-      - name: Auto-format with Black then commit if changed
+      - name: Auto-format + sort imports (Black + isort)
         run: |
-          black .    # formatiert automatisch
+          isort .
+          black .
+
+      - name: Commit & push formatting changes (if any)
+        run: |
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           git add .
-          git diff --cached --quiet || git commit -m "chore: auto-format code with Black"
-          git push || true    # push, aber fehler ignorieren falls nötig
-
-      # Optionale weitere Checks (eg. ruff, isort, mypy, bandit) — je nach Bedarf
-      - name: Imports check (isort)
-        run: isort --check-only --diff .
+          git diff --cached --quiet || (git commit -m "chore: auto-format / sort imports" && git push)
 
       - name: Lint (ruff)
         run: ruff check .
