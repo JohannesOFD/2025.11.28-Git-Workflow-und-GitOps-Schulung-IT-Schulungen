@@ -24,21 +24,21 @@ jobs:
           curl -s "https://get.sdkman.io" | bash
           source "$HOME/.sdkman/bin/sdkman-init.sh"
           sdk install gradle
-          
+
       - name: Create Gradle Files
         run: |
           echo 'plugins { kotlin("js") version "1.8.0" }' > build.gradle.kts
           echo 'repositories { mavenCentral() }' >> build.gradle.kts
-          echo 'kotlin { js { browser() } }' >> build.gradle.kts  # Füge die JS-Zielkonfiguration hinzu
+          echo 'kotlin { js { browser() } }' >> build.gradle.kts
 
-      - name: Create Gradle Wrapper
-        run: ./gradlew wrapper  # Erstelle den Gradle Wrapper
+      - name: Generate Gradle Wrapper
+        run: gradle wrapper  # Erstelle den Gradle Wrapper
 
       - name: Make Gradle Wrapper Executable
-        run: chmod +x gradlew
+        run: chmod +x ./gradlew  # Sicherstellen, dass der Wrapper ausführbar ist
 
       - name: Build with Gradle
-        run: ./gradlew build
+        run: ./gradlew build  # Jetzt sollte es funktionieren
 
       - name: Deploy to GitHub Pages
         run: |
