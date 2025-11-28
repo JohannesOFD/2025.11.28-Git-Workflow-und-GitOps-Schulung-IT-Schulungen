@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 # hello.py - einfacher lokaler Chatbot zum Testen (UTC mit timezone-aware datetime)
 
-import sys
-import time
 import random
+import sys
 from datetime import datetime, timezone
 
 LOGFILE = "chatbot.log"
