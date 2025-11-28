@@ -10,37 +10,41 @@ on:
       - "docs/**"
   workflow_dispatch:
   schedule:
-    - cron: "0 3 * * *"   # every day at 3
-    #- cron: "*/5 * * * *"   # every 5th minute
+    - cron: "0 3 * * *"   # jeden Tag um 03:00
   issues:
     types: [closed]
 
 permissions:
-  contents: write   # braucht write-Permission, damit git push funktioniert bei auto-commits
+  contents: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.10, 3.11, 3.12]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # wichtig, damit git history vollständig ist für commits/pushes
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
+          python-version: ${{ matrix.python-version }}
           check-latest: false
           update-environment: true
           allow-prereleases: false
 
-      - name: Restore pip cache
+      - name: Cache pip
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt', '**/pyproject.toml', '**/poetry.lock') }}
-          restore-keys: ${{ runner.os }}-pip-
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('**/requirements.txt', '**/pyproject.toml', '**/poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-${{ matrix.python-version }}-
+            ${{ runner.os }}-pip-
 
       - name: Install dependencies
         run: |
@@ -56,7 +60,7 @@ jobs:
       - name: Upload logfile and script
         uses: actions/upload-artifact@v4
         with:
-          name: build-artifact
+          name: build-artifact-${{ matrix.python-version }}
           path: |
             chatbot.log
             chatBot.py
@@ -66,7 +70,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.10', '3.11', '3.12']
+        python-version: [3.10, 3.11, 3.12]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -77,6 +81,15 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+
+      - name: Cache pip for lint/format
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-lint
+          restore-keys: |
+            ${{ runner.os }}-pip-${{ matrix.python-version }}-
+            ${{ runner.os }}-pip-
 
       - name: Install formatting & lint tools
         run: |
@@ -117,7 +130,7 @@ jobs:
           git add .
           git diff --cached --quiet || (git commit -m "chore: typing" && git push)
 
-      - name: Security scan (bandit) → output report, but don’t fail build
+      - name: Security scan (bandit) → output report, aber build nicht fehlschlagen lassen
         run: |
           bandit -r . -f json -o bandit-report.json || true
 
@@ -134,24 +147,25 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.10', '3.11', '3.12']
+        python-version: [3.10, 3.11, 3.12]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-          cache: 'pip'
 
-      - name: Restore pip cache
+      - name: Cache pip
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: runner.os−pip−{{ matrix.python-version || '3.x' }}-v1
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-test
           restore-keys: |
-            runner.os−pip−{{ matrix.python-version || '3.x' }}-
+            ${{ runner.os }}-pip-${{ matrix.python-version }}-
             ${{ runner.os }}-pip-
 
       - name: Install test deps
@@ -196,6 +210,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Deploy (demo)
         run: |
