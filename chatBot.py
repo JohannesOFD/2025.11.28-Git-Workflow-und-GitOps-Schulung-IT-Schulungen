@@ -47,7 +47,7 @@ def handle_intent(intent: str, text: str) -> str:
     if intent == "joke":
         return random.choice(JOKES)
     if intent == "bye":
-        return 5
+        return "Tschüss! Ich beende mich jetzt."
     return echo_response(text)
 
 
