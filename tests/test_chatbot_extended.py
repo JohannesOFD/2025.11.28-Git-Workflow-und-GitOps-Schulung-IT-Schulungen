@@ -1,13 +1,9 @@
 import builtins
-import os
 import re
 import sys
-import tempfile
 from pathlib import Path
-from unittest import mock
 
 import hello as cb  # dein hello.py
-import pytest
 
 LOGFILE = cb.LOGFILE
 
