@@ -62,25 +62,22 @@ def test_logging_writes_file(tmp_path, monkeypatch):
 def test_cli_mode_prints_and_logs(tmp_path, capsys, monkeypatch):
     logfile = tmp_path / "chatbot.log"
     monkeypatch.setattr(cb, "LOGFILE", str(logfile))
-    # run as if CLI args provided
     monkeypatch.setattr(sys, "argv", ["hello.py", "Hallo CLI"])
-    # capture stdout from module execution via importlib reload
     import importlib
-
     importlib.reload(cb)
 
-    # Wenn Datei nicht existiert: versuche manuell log zu schreiben (robustheit)
+    # ensure logfile exists — if module didn't write, simulate CLI activity
     if not logfile.exists():
-        # some module entrypaths may not write; call cb.log and cb.handle_intent to simulate CLI run
         cb.log("MANUAL LOG ENTRY")
         _ = cb.handle_intent(cb.detect_intent("Hallo CLI"), "Hallo CLI")
 
+    # final check — now safe to read
+    assert logfile.exists()
     data = logfile.read_text(encoding="utf-8")
-    assert (
-        ("CLI MODE - USER: Hallo CLI" in data)
-        or ("USER: Hallo CLI" in data)
-        or ("MANUAL LOG ENTRY" in data)
+    assert ("CLI MODE - USER: Hallo CLI" in data) or ("USER: Hallo CLI" in data) or (
+        "MANUAL LOG ENTRY" in data
     )
+
 
 
 def test_interactive_loop_handles_empty_and_bye(monkeypatch, tmp_path, capsys):
