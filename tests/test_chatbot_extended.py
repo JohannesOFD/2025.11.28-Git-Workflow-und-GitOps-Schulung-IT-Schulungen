@@ -8,7 +8,7 @@ from unittest import mock
 
 import pytest
 
-import hello as cb  # dein hello.py
+import chatBot as cb  # dein hello.py
 
 LOGFILE = cb.LOGFILE
 
