@@ -9,8 +9,8 @@ on:
       - "src/**"
       - "docs/**"
   workflow_dispatch:
-  schedule:
-    - cron: "0 3 * * *"   # jeden Tag um 03:00
+#  schedule:
+#    - cron: "0 3 * * *"   # jeden Tag um 03:00
   issues:
     types: [closed]
 
